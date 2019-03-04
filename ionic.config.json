@@ -1,5 +1,7 @@
 {
   "name": "seguimiento",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
