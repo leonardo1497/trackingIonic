@@ -22,39 +22,39 @@ export class RutaPage implements OnInit {
     private platform: Platform
 
   ) {
-    platform.ready().then(() => {
-
-      this.backgroundMode.on('activate').subscribe(() => {
-        console.log('activated');
-      });
-      this.backgroundMode.on('enable').subscribe(()=>{
-        console.log('enable')
-        this.backgroundMode.disableWebViewOptimizations();
-      })
-      this.backgroundMode.enable();
-      
-      this.backgroundMode.overrideBackButton();
-    })
    }
 
   ngOnInit() {
+    this.platform.ready().then(() => {
+
+      this.backgroundMode.enable();
+      
+    });
   }
 
   startTracking() {
     this.isTracking = true;
     this.api.removeLocations()
+    this.getPosition();
+    this.backgroundMode.on('activate').subscribe(() => {
+      console.log('activated');
+      this.getPosition();
+    });
 
-    this.positionSubscription = this.geolocation.watchPosition()
-      .pipe(
-        filter((p) => p.coords !== undefined) //Filter Out Errors
-      )
-      .subscribe(data => {
-        setTimeout(() => {
-          this.api.setLocation(data.coords.latitude, data.coords.longitude)
-        }, 0);
-      });
   }
 
+  getPosition(){
+    this.positionSubscription = this.geolocation.watchPosition()
+    .pipe(
+      filter((p) => p.coords !== undefined) //Filter Out Errors
+    )
+    .subscribe(data => {
+      setTimeout(() => {
+        this.api.setLocation(data.coords.latitude, data.coords.longitude)
+      }, 0);
+    });
+
+  }
   stopTracking() {
     this.isTracking = false;
     this.positionSubscription.unsubscribe();
