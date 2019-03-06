@@ -3,6 +3,8 @@ import { ApiService } from '../api.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-ruta',
@@ -15,8 +17,25 @@ export class RutaPage implements OnInit {
 
   constructor(
     private geolocation: Geolocation,
-    private api: ApiService
-  ) { }
+    private api: ApiService,
+    public backgroundMode: BackgroundMode,
+    private platform: Platform
+
+  ) {
+    platform.ready().then(() => {
+
+      this.backgroundMode.on('activate').subscribe(() => {
+        console.log('activated');
+      });
+      this.backgroundMode.on('enable').subscribe(()=>{
+        console.log('enable')
+        this.backgroundMode.disableWebViewOptimizations();
+      })
+      this.backgroundMode.enable();
+      
+      this.backgroundMode.overrideBackButton();
+    })
+   }
 
   ngOnInit() {
   }
