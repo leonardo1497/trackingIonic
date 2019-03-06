@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ruta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-button full icon-left (click)="startTracking()" *ngIf="!isTracking">
+    <ion-icon name="locate"></ion-icon>
+    Start Tracking
+  </ion-button>
+  <ion-button full color="danger" icon-left (click)="stopTracking()" *ngIf="isTracking">
+    <ion-icon name="hand"></ion-icon>
+    Stop Tracking
+  </ion-button>
+</ion-content>

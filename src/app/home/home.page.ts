@@ -1,6 +1,6 @@
-import { Component,ViewChild, ElementRef, OnInit } from '@angular/core';
-import {Geolocation} from '@ionic-native/geolocation/ngx';
-import { Storage  } from '@ionic/storage';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Storage } from '@ionic/storage';
 import { Subscription } from 'rxjs';
 import { NavController, Platform } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
@@ -14,6 +14,8 @@ import {
   Marker,
   Environment
 } from '@ionic-native/google-maps/ngx';
+import { ApiService } from '../api.service';
+import * as firebase from 'firebase';
 
 declare var google;
 @Component({
@@ -23,47 +25,47 @@ declare var google;
 })
 export class HomePage implements OnInit {
   currentMapTrack = null;
+  ref = firebase.database().ref();
 
-  isTracking = false;
-  trackedRoute = [];
-  previousTracks = [];
+  firebaseData: any = [];
   map: GoogleMap;
-  positionSubscription: Subscription;
-  latitude: number;
-  longitude: number;
+  latitude: number = 16.778646322031687;
+  longitude: number = -93.09776678555656;
+  datosFirebase: any = [];
 
-  constructor(public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation, private storage: Storage) { }
+  constructor(
+    public navCtrl: NavController,
+  ) {
+    this.ref.on('value', response => {
+      this.datosFirebase = []
+      let datos = snapshotToArray(response)
+      if (datos.length > 0) {
+        this.latitude = datos[0].latitude
+        this.longitude = datos[0].longitude
+        this.getMap()
+        for (let dato of datos) {
+          this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
+        }
+        this.redrawPath(this.datosFirebase);
+      }
+    })
+  }
 
   ngOnInit() {
-    //this.plt.ready().then(() => {
-    this.getposition()
-
   }
-  getposition(){
-    this.loadHistoricRoutes();
-    this.geolocation.getCurrentPosition().then(response =>{
-      console.log(response)
-      this.latitude = response.coords.latitude;
-      this.longitude = response.coords.longitude;
-      this.getMap();
-    
-    },e =>{
-      console.log(e)
-    })
 
-  }
-  getMap(){
+  getMap() {
     let mapOptions: GoogleMapOptions = {
       camera: {
-         target: {
-           lat: this.latitude,
-           lng: this.longitude
-         },
-         
-         zoom: 18,
-         tilt: 30
-       },
-       controls: {
+        target: {
+          lat: this.latitude,
+          lng: this.longitude
+        },
+
+        zoom: 18,
+        tilt: 30
+      },
+      controls: {
         compass: true,
         myLocationButton: true,
         myLocation: true,
@@ -71,73 +73,43 @@ export class HomePage implements OnInit {
         mapToolbar: true
       }
     };
-    
-    this.map = GoogleMaps.create('map_canvas',mapOptions)
+
+    this.map = GoogleMaps.create('map_canvas', mapOptions)
     let marker: Marker = this.map.addMarkerSync({
       title: 'Inicio',
       icon: 'blue',
       animation: 'DROP',
       position: {
-        
+
         lat: this.latitude,
         lng: this.longitude
       }
     });
   }
 
-  loadHistoricRoutes() {
-    this.storage.get('routes').then(data => {
-      if (data) {
-        this.previousTracks = data;
-      }
-    });
-  }
-
-  startTracking() {
-    this.isTracking = true;
-    this.trackedRoute = [];
- 
-    this.positionSubscription = this.geolocation.watchPosition()
-      .pipe(
-        filter((p) => p.coords !== undefined) //Filter Out Errors
-      )
-      .subscribe(data => {
-        setTimeout(() => {
-          this.trackedRoute.push({ lat: data.coords.latitude, lng: data.coords.longitude });
-          this.redrawPath(this.trackedRoute);
-        }, 0);
-      });
- 
-  }
- 
   redrawPath(path) {
     if (this.currentMapTrack != null) {
       this.currentMapTrack = null;
     }
- 
+
     if (path.length > 1) {
       this.currentMapTrack = this.map.addPolyline({
         points: path,
         color: '#ff00ff',
         width: 10,
         geodesic: true,
-        
+
       })
-    //  this.currentMapTrack.setMap(this.map);
     }
   }
+}
 
-  stopTracking() {
-    let newRoute = { finished: new Date().getTime(), path: this.trackedRoute };
-    this.previousTracks.push(newRoute);
-    this.storage.set('routes', this.previousTracks);
-   
-    this.isTracking = false;
-    this.positionSubscription.unsubscribe();
-    this.currentMapTrack=null;
-  }
-   
-  showHistoryRoute(route) {
-    this.redrawPath(route);
-  }
+export const snapshotToArray = snapshot => {
+  let returnArr = [];
+  snapshot.forEach(childSnapshot => {
+    let item = childSnapshot.val()
+    item.key = childSnapshot.key
+    returnArr.push(item)
+  });
+  return returnArr
 }
