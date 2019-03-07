@@ -3,14 +3,15 @@ import { ApiService } from '../api.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { Platform } from '@ionic/angular';
-
+import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
+declare var window;
 @Component({
   selector: 'app-ruta',
   templateUrl: './ruta.page.html',
   styleUrls: ['./ruta.page.scss'],
 })
+
 export class RutaPage implements OnInit {
   isTracking = false;
   positionSubscription: Subscription;
@@ -18,45 +19,56 @@ export class RutaPage implements OnInit {
   constructor(
     private geolocation: Geolocation,
     private api: ApiService,
-    public backgroundMode: BackgroundMode,
-    private platform: Platform
-
-  ) {
+    private platform: Platform,
+    private backgroundGeolocation: BackgroundGeolocation,
+    ) {
    }
 
   ngOnInit() {
-    this.platform.ready().then(() => {
+   this.platform.ready().then(() => {
+      const config: BackgroundGeolocationConfig =  {
+        notificationTitle: 'Rastreo ejecutandose',
+        notificationText: 'Activo',
+        desiredAccuracy: 1,
+        stationaryRadius: 1,
+        distanceFilter: 1,
+        debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+        stopOnTerminate: true, // enable this to clear background location settings when the app terminates
 
-      this.backgroundMode.enable();
-      
+      };
+      this.backgroundGeolocation.configure(config).then(() => {
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(
+        (location: BackgroundGeolocationResponse)=>{
+          console.log(location.latitude, "  ", location.longitude)
+          this.api.setLocation(location.latitude, location.longitude)
+
+      })
+     })
+
     });
   }
+
+
 
   startTracking() {
+    this.api.removeLocations();
     this.isTracking = true;
-    this.api.removeLocations()
-    this.getPosition();
-    this.backgroundMode.on('activate').subscribe(() => {
-      console.log('activated');
-      this.getPosition();
-    });
+    this.backgroundGeolocation.start().then(()=>{
+      console.log("activado")
+
+    })
+
 
   }
 
-  getPosition(){
-    this.positionSubscription = this.geolocation.watchPosition()
-    .pipe(
-      filter((p) => p.coords !== undefined) //Filter Out Errors
-    )
-    .subscribe(data => {
-      setTimeout(() => {
-        this.api.setLocation(data.coords.latitude, data.coords.longitude)
-      }, 0);
-    });
 
-  }
   stopTracking() {
     this.isTracking = false;
-    this.positionSubscription.unsubscribe();
+
+
+    this.backgroundGeolocation.stop().then(()=>{
+      console.log("stopeado")
+    })
+    
   }
 }

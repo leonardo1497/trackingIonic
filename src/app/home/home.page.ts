@@ -45,8 +45,9 @@ export class HomePage implements OnInit {
         this.getMap()
         for (let dato of datos) {
           this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
+          this.redrawPath(this.datosFirebase);
         }
-        this.redrawPath(this.datosFirebase);
+        
       }
     })
   }
