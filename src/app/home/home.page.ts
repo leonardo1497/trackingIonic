@@ -31,6 +31,8 @@ export class HomePage implements OnInit {
   map: GoogleMap;
   latitude: number = 16.778646322031687;
   longitude: number = -93.09776678555656;
+  FinalLatitude: number = 16.778646322031687;
+  FinalLongitude: number = -93.09776678555656;
   datosFirebase: any = [];
 
   constructor(
@@ -42,15 +44,13 @@ export class HomePage implements OnInit {
       if (datos.length > 0) {
         this.latitude = datos[0].latitude
         this.longitude = datos[0].longitude
+        this.FinalLatitude = datos[datos.length-1].latitude
+        this.FinalLongitude = datos[datos.length-1].longitude
         this.getMap()
         for (let dato of datos) {
           this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
           this.redrawPath(this.datosFirebase);
         }
-<<<<<<< HEAD
-        
-=======
->>>>>>> 856a2aa26a3b6094750725ea438e7b2ae4956e2c
       }
     })
   }
@@ -87,6 +87,17 @@ export class HomePage implements OnInit {
 
         lat: this.latitude,
         lng: this.longitude
+      }
+    });
+
+    let markerFinal: Marker = this.map.addMarkerSync({
+      title: 'Actual',
+      icon: 'red',
+      animation: 'DROP',
+      position: {
+
+        lat: this.FinalLatitude,
+        lng: this.FinalLongitude
       }
     });
   }
