@@ -47,7 +47,10 @@ export class HomePage implements OnInit {
           this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
           this.redrawPath(this.datosFirebase);
         }
+<<<<<<< HEAD
         
+=======
+>>>>>>> 856a2aa26a3b6094750725ea438e7b2ae4956e2c
       }
     })
   }

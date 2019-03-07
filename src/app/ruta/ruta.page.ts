@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+
 import { Platform } from '@ionic/angular';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
-declare var window;
 @Component({
   selector: 'app-ruta',
   templateUrl: './ruta.page.html',
@@ -14,10 +11,9 @@ declare var window;
 
 export class RutaPage implements OnInit {
   isTracking = false;
-  positionSubscription: Subscription;
+
 
   constructor(
-    private geolocation: Geolocation,
     private api: ApiService,
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
