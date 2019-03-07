@@ -22,11 +22,18 @@ export class RutaPage implements OnInit {
 
   ngOnInit() {
    this.platform.ready().then(() => {
+     this.backgroundGeolocation.checkStatus().then((status)=>{
+      if(status.isRunning){
+        this.isTracking=true;
+      }
+
+     })
+
       const config: BackgroundGeolocationConfig =  {
         notificationTitle: 'Rastreo ejecutandose',
         notificationText: 'Activo',
-        desiredAccuracy: 1,
-        stationaryRadius: 1,
+        desiredAccuracy: 50,
+        stationaryRadius: 4,
         distanceFilter: 1,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
         stopOnTerminate: true, // enable this to clear background location settings when the app terminates
