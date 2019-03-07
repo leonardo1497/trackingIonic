@@ -50,6 +50,7 @@ export class RutaPage implements OnInit {
     )
     .subscribe(data => {
       setTimeout(() => {
+        console.log("Ey")
         this.api.setLocation(data.coords.latitude, data.coords.longitude)
       }, 0);
     });
