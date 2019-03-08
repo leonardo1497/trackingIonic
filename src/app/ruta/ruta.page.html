@@ -5,12 +5,19 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-button full icon-left (click)="startTracking()" *ngIf="!isTracking">
+  <ion-button full icon-left (click)="startTracking()" *ngIf="!isTracking" style="width: 100%">
     <ion-icon name="locate"></ion-icon>
-    Start Tracking
+    Iniciar recorrido
   </ion-button>
-  <ion-button full color="danger" icon-left (click)="stopTracking()" *ngIf="isTracking">
+  <ion-button full color="danger" icon-left (click)="stopTracking()" *ngIf="isTracking" style="width: 100%">
     <ion-icon name="hand"></ion-icon>
-    Stop Tracking
+    Detener recorrido
   </ion-button>
+  <ion-card>
+    <ion-card-content>
+      <img src="assets/img/placeholder.png">
+    </ion-card-content>
+  </ion-card>
+  <br>
+    <p *ngIf="isTracking" style="color: whitesmoke">Compartiendo tu ubicación</p>
 </ion-content>

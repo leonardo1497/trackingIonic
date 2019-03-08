@@ -34,7 +34,7 @@ export class HomePage implements OnInit {
   FinalLatitude: number = 16.778646322031687;
   FinalLongitude: number = -93.09776678555656;
   datosFirebase: any = [];
-
+  bandera=true;
   constructor(
     public navCtrl: NavController,
   ) {
@@ -46,11 +46,15 @@ export class HomePage implements OnInit {
         this.longitude = datos[0].longitude
         this.FinalLatitude = datos[datos.length-1].latitude
         this.FinalLongitude = datos[datos.length-1].longitude
-        this.getMap()
+        if(this.bandera){
+          this.getMap();
+          this.bandera=false
+        }
+        console.log("aqui andamos")
         for (let dato of datos) {
           this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
-          this.redrawPath(this.datosFirebase);
         }
+        this.redrawPath(this.datosFirebase);
       }
     })
   }
@@ -59,6 +63,10 @@ export class HomePage implements OnInit {
   }
 
   getMap() {
+    Environment.setEnv({
+      'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyDvnrn4179xHiXqCU_8c_ot4VeIJEcrNJ8',
+      'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyDvnrn4179xHiXqCU_8c_ot4VeIJEcrNJ8'
+    });
     let mapOptions: GoogleMapOptions = {
       camera: {
         target: {
@@ -90,7 +98,7 @@ export class HomePage implements OnInit {
       }
     });
 
-    let markerFinal: Marker = this.map.addMarkerSync({
+    /*let markerFinal: Marker = this.map.addMarkerSync({
       title: 'Actual',
       icon: 'red',
       animation: 'DROP',
@@ -99,7 +107,7 @@ export class HomePage implements OnInit {
         lat: this.FinalLatitude,
         lng: this.FinalLongitude
       }
-    });
+    });*/
   }
 
   redrawPath(path) {

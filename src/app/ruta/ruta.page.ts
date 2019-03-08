@@ -33,7 +33,7 @@ export class RutaPage implements OnInit {
         notificationTitle: 'Rastreo ejecutandose',
         notificationText: 'Activo',
         desiredAccuracy: 50,
-        stationaryRadius: 4,
+        stationaryRadius: 1,
         distanceFilter: 1,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
         stopOnTerminate: true, // enable this to clear background location settings when the app terminates
