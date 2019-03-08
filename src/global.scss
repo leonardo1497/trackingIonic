@@ -11,11 +11,10 @@
 @import '~@ionic/angular/css/flex-utils.css';
 
 ion-toolbar{
-    --ion-toolbar-background:#550055;
-    --ion-toolbar-color:black;
-    
+    --ion-toolbar-background:#8b85c1;
+    --ion-toolbar-color:WHITE;
 }
 ion-content{
-    //--ion-background-color: #330033;
-    background-image: url("assets/img/Endless-Constellation.svg");
+    --ion-background-color: white;
 }
+

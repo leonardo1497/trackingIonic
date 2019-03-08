@@ -70,7 +70,6 @@ export class HomePage implements OnInit {
         this.ref.off();
       }
     })
-    this.ref.
   }
 
   ngOnInit() {
