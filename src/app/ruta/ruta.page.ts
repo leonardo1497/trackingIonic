@@ -22,10 +22,17 @@ export class RutaPage implements OnInit {
 
   ngOnInit() {
    this.platform.ready().then(() => {
+     this.backgroundGeolocation.checkStatus().then((status)=>{
+      if(status.isRunning){
+        this.isTracking=true;
+      }
+
+     })
+
       const config: BackgroundGeolocationConfig =  {
         notificationTitle: 'Rastreo ejecutandose',
         notificationText: 'Activo',
-        desiredAccuracy: 1,
+        desiredAccuracy: 50,
         stationaryRadius: 1,
         distanceFilter: 1,
         debug: true, //  enable this hear sounds for background-geolocation life-cycle.
@@ -35,7 +42,6 @@ export class RutaPage implements OnInit {
       this.backgroundGeolocation.configure(config).then(() => {
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(
         (location: BackgroundGeolocationResponse)=>{
-          console.log(location.latitude, "  ", location.longitude)
           this.api.setLocation(location.latitude, location.longitude)
 
       })
@@ -60,11 +66,9 @@ export class RutaPage implements OnInit {
 
   stopTracking() {
     this.isTracking = false;
-
-
     this.backgroundGeolocation.stop().then(()=>{
       console.log("stopeado")
     })
-    
+    this.api.removeLocations();
   }
 }

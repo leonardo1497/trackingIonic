@@ -9,11 +9,5 @@
 <ion-content padding>
   <div id="map_canvas"></div>
 
-  <!-- <ion-list>
-    <ion-list-header>Previous Tracks</ion-list-header>
-    <ion-item *ngFor="let route of previousTracks">
-      {{ route.finished | date }}, {{ route.path.length }} Waypoints
-      <ion-button clear item-end (click)="showHistoryRoute(route.path)">View Route</ion-button>
-    </ion-item>
-  </ion-list> -->
+  <p *ngIf="!seguimiento" style="color: crimson" style="text-align: center;">No hay ningún seguimiento disponible</p>
 </ion-content>
