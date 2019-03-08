@@ -42,7 +42,6 @@ export class RutaPage implements OnInit {
       this.backgroundGeolocation.configure(config).then(() => {
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(
         (location: BackgroundGeolocationResponse)=>{
-          console.log(location.latitude, "  ", location.longitude)
           this.api.setLocation(location.latitude, location.longitude)
 
       })
@@ -67,11 +66,9 @@ export class RutaPage implements OnInit {
 
   stopTracking() {
     this.isTracking = false;
-
-
     this.backgroundGeolocation.stop().then(()=>{
       console.log("stopeado")
     })
-    
+    this.api.removeLocations();
   }
 }

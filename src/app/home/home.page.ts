@@ -29,32 +29,45 @@ export class HomePage implements OnInit {
 
   firebaseData: any = [];
   map: GoogleMap;
-  latitude: number = 16.778646322031687;
-  longitude: number = -93.09776678555656;
-  FinalLatitude: number = 16.778646322031687;
-  FinalLongitude: number = -93.09776678555656;
+  latitude: number =0;
+  longitude: number = 0;
+  FinalLatitude: number = 0;
+  FinalLongitude: number = 0;
   datosFirebase: any = [];
-  bandera=true;
+ 
+  seguimiento= false;
   constructor(
     public navCtrl: NavController,
   ) {
     this.ref.on('value', response => {
       this.datosFirebase = []
       let datos = snapshotToArray(response)
+    
       if (datos.length > 0) {
         this.latitude = datos[0].latitude
         this.longitude = datos[0].longitude
         this.FinalLatitude = datos[datos.length-1].latitude
         this.FinalLongitude = datos[datos.length-1].longitude
-        if(this.bandera){
+        if(!this.seguimiento){
           this.getMap();
-          this.bandera=false
+          this.seguimiento=true;
         }
-        console.log("aqui andamos")
         for (let dato of datos) {
           this.datosFirebase.push({ lat: dato.latitude, lng: dato.longitude })
         }
         this.redrawPath(this.datosFirebase);
+      }else{
+        let markerFinal: Marker = this.map.addMarkerSync({
+          title: 'Final',
+          icon: 'red',
+          animation: 'DROP',
+          position: {
+    
+            lat: this.FinalLatitude,
+            lng: this.FinalLongitude
+          }
+        });
+        this.ref.off();
       }
     })
   }
@@ -98,16 +111,6 @@ export class HomePage implements OnInit {
       }
     });
 
-    /*let markerFinal: Marker = this.map.addMarkerSync({
-      title: 'Actual',
-      icon: 'red',
-      animation: 'DROP',
-      position: {
-
-        lat: this.FinalLatitude,
-        lng: this.FinalLongitude
-      }
-    });*/
   }
 
   redrawPath(path) {
